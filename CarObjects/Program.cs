@@ -4,13 +4,11 @@
 
     class Veiculo
     {
-        public string Nome { get; }
-        public double Peso { get; set; }
-        public double Aceleracao { get; }
-        public double VelocidadeMaxima { get; }
-        public double Gasolina { get; set; }
-
-        public List<Equipamento> Equipamentos { get; set; }
+        private string Nome { get; set; }
+        private double Peso { get; set; }
+        private double Aceleracao { get; set; }
+        private double VelocidadeMaxima { get; set; }
+        private double Gasolina { get; set; }
 
         public Veiculo(string nome, double peso, double aceleracao, double velocidadeMaxima, double gasolina)
         {
@@ -19,12 +17,10 @@
             Aceleracao = aceleracao;
             VelocidadeMaxima = velocidadeMaxima;
             Gasolina = gasolina;
-            Equipamentos = new List<Equipamento>();
         }
 
         public void MostrarDetalhes()
         {
-            Console.WriteLine();
             Console.WriteLine($"Detalhes do {Nome}:");
             Console.WriteLine($"Peso: {Peso} kg");
             Console.WriteLine($"Aceleração: {Aceleracao} m/s²");
@@ -36,16 +32,26 @@
         {
             double consumo = Peso * 0.01; // Exemplo de fórmula de consumo de gasolina baseado no peso
             Gasolina -= consumo;
-            Console.WriteLine($"\nConsumo de gasolina: {consumo} litros");
+            Console.WriteLine($"Consumo de gasolina: {consumo} litros");
             Console.WriteLine($"Gasolina restante: {Gasolina} litros");
+        }
+
+        public double CalcularTorque()
+        {
+            return Aceleracao * Peso;
+        }
+
+        public virtual void UsarEquipamento(Equipamento equipamento)
+        {
+            Console.WriteLine($"Usando {equipamento.Nome} no {Nome}");
         }
     }
 
     class Equipamento
     {
-        public string Nome { get; }
-        public double PesoExtra { get; }
-        public double TorqueExtra { get; }
+        private string Nome { get; set; }
+        private double PesoExtra { get; set; }
+        private double TorqueExtra { get; set; }
 
         public Equipamento(string nome, double pesoExtra, double torqueExtra)
         {
@@ -56,20 +62,10 @@
 
         public void Equipar(Veiculo veiculo)
         {
-            Equipamento equip = new(this.Nome, this.PesoExtra, this.TorqueExtra);
             veiculo.Peso += PesoExtra;
-            veiculo.Equipamentos.Add(equip);
-            Console.WriteLine($"\n{veiculo.Nome} equipado com {Nome}");
+            Console.WriteLine($"{veiculo.Nome} equipado com {Nome}");
             Console.WriteLine($"Peso atualizado: {veiculo.Peso} kg");
-        }
-
-        public void MostrarDetalhes(Veiculo veiculo)
-        {
-            Console.WriteLine($"\nDetalhes do veiculo {veiculo.Nome}:");
-            foreach (Equipamento v in veiculo.Equipamentos)
-            {
-                Console.WriteLine($"Equipado com {v.Nome}");
-            }
+            veiculo.UsarEquipamento(this);
         }
     }
 
@@ -77,14 +73,48 @@
     {
         static void Main()
         {
-            var nitro = new Equipamento("Nitro Boost", 50, 100);
-            var spoiler = new Equipamento("Spoilers Aerodinâmicos", 80, 50);
-            var mustang = new Veiculo("Mustang GT", 1600, 7, 250, 80);
+            Veiculo fordMustang = new Veiculo("Ford Mustang", 1600, 7, 250, 80);
+            Veiculo nissanSkyline = new Veiculo("Nissan Skyline", 1450, 6, 280, 85);
+            Veiculo toyotaSupra = new Veiculo("Toyota Supra", 1550, 6.5, 270, 90);
+            Veiculo mazdaRX7 = new Veiculo("Mazda RX-7", 1300, 6.8, 260, 75);
+            Veiculo chevroletCamaro = new Veiculo("Chevrolet Camaro", 1700, 7.2, 255, 85);
 
-            nitro.Equipar(mustang);
-            spoiler.Equipar(mustang);
+            Equipamento lancadorMissoes = new Equipamento("Lançador de Mísseis", 300, 200);
+            Equipamento nitroBoost = new Equipamento("Nitro Boost", 50, 100);
+            Equipamento spoilersAerodinamicos = new Equipamento("Spoilers Aerodinâmicos", 80, 50);
+            Equipamento sistemaTurbo = new Equipamento("Sistema de Turbo", 70, 80);
+            Equipamento escapeEsportivo = new Equipamento("Escape Esportivo", 40, 60);
+            Equipamento kitSuspensaoEsportiva = new Equipamento("Kit de Suspensão Esportiva", 120, 90);
 
-            mustang.MostrarDetalhes();
+            Console.WriteLine("Ford Mustang:");
+            fordMustang.MostrarDetalhes();
+            Console.WriteLine($"Torque: {fordMustang.CalcularTorque()} Nm");
+            fordMustang.ConsumirGasolina();
+            nitroBoost.Equipar(fordMustang);
+
+            Console.WriteLine("\nNissan Skyline:");
+            nissanSkyline.MostrarDetalhes();
+            Console.WriteLine($"Torque: {nissanSkyline.CalcularTorque()} Nm");
+            nissanSkyline.ConsumirGasolina();
+            spoilersAerodinamicos.Equipar(nissanSkyline);
+
+            Console.WriteLine("\nToyota Supra:");
+            toyotaSupra.MostrarDetalhes();
+            Console.WriteLine($"Torque: {toyotaSupra.CalcularTorque()} Nm");
+            toyotaSupra.ConsumirGasolina();
+            sistemaTurbo.Equipar(toyotaSupra);
+
+            Console.WriteLine("\nMazda RX-7:");
+            mazdaRX7.MostrarDetalhes();
+            Console.WriteLine($"Torque: {mazdaRX7.CalcularTorque()} Nm");
+            mazdaRX7.ConsumirGasolina();
+            escapeEsportivo.Equipar(mazdaRX7);
+
+            Console.WriteLine("\nChevrolet Camaro:");
+            chevroletCamaro.MostrarDetalhes();
+            Console.WriteLine($"Torque: {chevroletCamaro.CalcularTorque()} Nm");
+            chevroletCamaro.ConsumirGasolina();
+            kitSuspensaoEsportiva.Equipar(chevroletCamaro);
         }
     }
 
